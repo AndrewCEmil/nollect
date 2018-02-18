@@ -7,19 +7,23 @@ from pprint import pprint as pp
 
 app = Flask(__name__)
 
+conferences_by_target = {}
+
 @app.route("/", methods=['GET', 'POST'])
 def base():
     if request.form.get('Digits', None):
-        return handle_start_conference(request.form.get('Digits'))
+        return handle_start_conference(request.form.get('From'), request.form.get('Digits'))
     else:
         return handle_gather()
 
-def handle_start_conference(target_phone):
+def handle_start_conference(from_phone, target_phone):
     print("Starting conference")
     response = VoiceResponse()
     call_into_conference(target_phone)
     dial = Dial()
-    dial.conference(properties.default_room, start_conference_on_enter=True, end_conference_on_exit=True)
+    conference_name = "{0}-{1}".format(from_phone, target_phone)
+    conferences_by_target["+" + target_phone] = conference_name
+    dial.conference(conference_name, start_conference_on_enter=True, end_conference_on_exit=True)
     response.append(dial)
     return str(response)
 
@@ -42,7 +46,7 @@ def call_into_conference(target_phone):
 def xml():
     response = VoiceResponse()
     dial = Dial()
-    dial.conference(properties.default_room, start_conference_on_enter=True, end_conference_on_exit=True)
+    dial.conference(conferences_by_target[request.form.get('To')], start_conference_on_enter=True, end_conference_on_exit=True)
     response.append(dial)
     return str(response)
 
