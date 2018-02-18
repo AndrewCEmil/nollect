@@ -22,7 +22,7 @@ def hello_monkey():
             from_=properties.twilio_phone,
             url=properties.current_ngrok + "/conference.xml")
         dial = Dial()
-        dial.conference(properties.default_room)
+        dial.conference(properties.default_room, start_conference_on_enter=True, end_conference_on_exit=True)
         response.append(dial)
     else:
         print("Gathering")
@@ -34,21 +34,13 @@ def hello_monkey():
     print(str(response))
     return str(response)
 
-@app.route("/voice.xml", methods=['GET', 'POST'])
-def say_xml():
-    return """<?xml version="1.0" encoding="UTF-8"?>
-<Response>
-    <Say voice="woman">Please leave a message after the tone.</Say>
-</Response>"""
-
 @app.route("/conference.xml", methods=['GET', 'POST'])
 def xml():
-    return """<?xml version="1.0" encoding="UTF-8"?>
-<Response>
-    <Dial>
-        <Conference startConferenceOnEnter="true" endConferenceOnExit="true">{0}</Conference>
-    </Dial>
-</Response>""".format(properties.default_room)
+    response = VoiceResponse()
+    dial = Dial()
+    dial.conference(properties.default_room, start_conference_on_enter=True, end_conference_on_exit=True)
+    response.append(dial)
+    return str(response)
 
 if __name__ == "__main__":
     app.run(debug=True, host='0.0.0.0', port=80)
