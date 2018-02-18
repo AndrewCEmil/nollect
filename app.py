@@ -8,31 +8,35 @@ from pprint import pprint as pp
 app = Flask(__name__)
 
 @app.route("/", methods=['GET', 'POST'])
-def hello_monkey():
-    """Respond to incoming requests."""
-    response = VoiceResponse()
-
+def base():
     if request.form.get('Digits', None):
-        print("Dialing")
-        digits = request.form.get('Digits')
-        print("digits: {0}".format(digits))
-        client = Client(properties.account_sid, properties.auth_token)
-        call = client.calls.create(
-            to="+{0}".format(digits),
-            from_=properties.twilio_phone,
-            url=properties.current_ngrok + "/conference.xml")
-        dial = Dial()
-        dial.conference(properties.default_room, start_conference_on_enter=True, end_conference_on_exit=True)
-        response.append(dial)
+        return handle_start_conference(request.form.get('Digits'))
     else:
-        print("Gathering")
-        gather = Gather(input='dtmf', timeout=60, num_digits=11)
-        gather.say('Enter your target number')
-        response.append(gather)
+        return handle_gather()
 
-    print("returning")
-    print(str(response))
+def handle_start_conference(target_phone):
+    print("Starting conference")
+    response = VoiceResponse()
+    call_into_conference(target_phone)
+    dial = Dial()
+    dial.conference(properties.default_room, start_conference_on_enter=True, end_conference_on_exit=True)
+    response.append(dial)
     return str(response)
+
+def handle_gather():
+    print("Gathering")
+    response = VoiceResponse()
+    gather = Gather(input='dtmf', timeout=60, num_digits=11)
+    gather.say('Enter your target number')
+    response.append(gather)
+    return str(response)
+
+def call_into_conference(target_phone):
+    client = Client(properties.account_sid, properties.auth_token)
+    call = client.calls.create(
+        to="+{0}".format(target_phone),
+        from_=properties.twilio_phone,
+        url=properties.current_ngrok + "/conference.xml")
 
 @app.route("/conference.xml", methods=['GET', 'POST'])
 def xml():
