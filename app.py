@@ -1,28 +1,38 @@
 import properties
 
-from flask import Flask
-from twilio.twiml.voice_response import Conference, Dial, VoiceResponse
+from flask import Flask, request
+from twilio.twiml.voice_response import Conference, Dial, Gather, VoiceResponse
 from twilio.rest import Client
+from pprint import pprint as pp
 
 app = Flask(__name__)
 
 @app.route("/", methods=['GET', 'POST'])
 def hello_monkey():
     """Respond to incoming requests."""
-    resp = VoiceResponse()
-    resp.say("Hello Monkey")
-    dial = Dial()
-    dial.conference(properties.default_room)
-    resp.append(dial)
+    response = VoiceResponse()
 
-    client = Client(properties.account_sid, properties.auth_token)
+    if request.form.get('Digits', None):
+        print("Dialing")
+        digits = request.form.get('Digits')
+        print("digits: {0}".format(digits))
+        client = Client(properties.account_sid, properties.auth_token)
+        call = client.calls.create(
+            to="+{0}".format(digits),
+            from_=properties.twilio_phone,
+            url=properties.current_ngrok + "/conference.xml")
+        dial = Dial()
+        dial.conference(properties.default_room)
+        response.append(dial)
+    else:
+        print("Gathering")
+        gather = Gather(input='dtmf', timeout=60, num_digits=11)
+        gather.say('Enter your target number')
+        response.append(gather)
 
-    call = client.calls.create(
-        to=properties.test_phone,
-        from_=properties.twilio_phone,
-        url=properties.current_ngrok)
-    
-    return str(resp)
+    print("returning")
+    print(str(response))
+    return str(response)
 
 @app.route("/voice.xml", methods=['GET', 'POST'])
 def say_xml():
