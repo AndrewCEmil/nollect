@@ -4,7 +4,7 @@
  * @param {!Object} req Cloud Function request context.
  * @param {!Object} res Cloud Function response context.
  */
-function helloWorld(req, res) {
+exports.helloWorld = (req, res) => {
   // Example input: {"message": "Hello!"}
   if (req.body.message === undefined) {
     // This is an error case, as "message" is required.
