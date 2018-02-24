@@ -35,24 +35,30 @@ exports.makeCall = (req, res) => {
 }
 
 function loadConfig() {
+    console.log("top of loadConfig");
     const q = ds.createQuery(["Secret"]);
 
     config = {}
     ds.runQuery(q, (err, entities, nextQuery) => {
+        console.log("inside query");
         if (err) {
             console.log("error running query");
             console.log(err);
             return;
         }
+        console.log("mapping entities");
         entities.map(fromDatastore).map( (e) => {
+            console.log("added entity to config");
             console.log(e);
             config[e.name] = e.value;
         });
     });
+    console.log("returning config");
     return config;
 }
 
 function fromDatastore (obj) {
+  console.log("converting object");
   console.log(obj);
   obj.name = obj[Datastore.KEY].name;
   return obj;
