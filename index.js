@@ -38,7 +38,7 @@ function loadConfig() {
     console.log("top of loadConfig");
     const q = ds.createQuery(["Secret"]);
 
-    config = await ds.runQuery(q, (err, entities, nextQuery) => {
+    var config = await ds.runQuery(q, (err, entities, nextQuery) => {
         console.log("inside query");
         if (err) {
             console.log("error running query");
