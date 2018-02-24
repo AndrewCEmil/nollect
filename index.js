@@ -20,7 +20,8 @@ exports.helloWorld = (req, res) => {
 };
 
 exports.makeCall = (req, res) => {
-    const conf = loadConfig();
+    conf = loadConfig();
+    console.log(conf);
     const Twilio = require('twilio');
     const client = new Twilio(conf.account_sid, conf.auth_token);
 
@@ -33,9 +34,10 @@ exports.makeCall = (req, res) => {
       .then(call => console.log(call.sid));
 }
 
-exports.loadConfig = () => {
+function loadConfig() {
     const q = ds.createQuery(["Secret"]);
 
+    config = {}
     ds.runQuery(q, (err, entities, nextQuery) => {
         if (err) {
             console.log("error running query");
@@ -43,12 +45,13 @@ exports.loadConfig = () => {
             return;
         }
         entities.map(fromDatastore).map( (e) => {
-            console.log(e)
+            config[e.name] = e.value;
         });
     });
+    return config;
 }
 
 function fromDatastore (obj) {
-  obj.id = obj[Datastore.KEY].id;
+  obj.name = obj[Datastore.KEY].name;
   return obj;
 }
