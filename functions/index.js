@@ -17,7 +17,7 @@ exports.helloWorld = (req, res) => {
 };
 
 exports.makeCall = (req, res) => {
-    const config = require('./config')
+    const config = require('./Config')
     console.log(config);
     const conf = config.getConfig();
     console.log(conf);
