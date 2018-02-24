@@ -18,7 +18,9 @@ exports.helloWorld = (req, res) => {
 
 exports.makeCall = (req, res) => {
     const config = require('./config')
+    console.log(conf);
     const conf = config.getConfig();
+    console.log(conf);
     const Twilio = require('twilio');
     const client = new Twilio(conf.account_sid, conf.auth_token);
 
