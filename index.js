@@ -34,7 +34,7 @@ exports.makeCall = (req, res) => {
       .then(call => console.log(call.sid));
 }
 
-function loadConfig() {
+async function loadConfig() {
     console.log("top of loadConfig");
     const q = ds.createQuery(["Secret"]);
 
