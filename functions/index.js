@@ -37,12 +37,13 @@ exports.loadConfig = () => {
     const q = ds.createQuery(["Secret"]);
 
     ds.runQuery(q, (err, entities, nextQuery) => {
-    if (err) {
-        console.log("error running query");
-        console.log(err);
-        return;
-    }
-    entities.map(fromDatastore).map( (e) => {
-        console.log(e)
+        if (err) {
+            console.log("error running query");
+            console.log(err);
+            return;
+        }
+        entities.map(fromDatastore).map( (e) => {
+            console.log(e)
+        });
     });
 }
