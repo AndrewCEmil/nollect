@@ -45,6 +45,7 @@ function loadConfig() {
             return;
         }
         entities.map(fromDatastore).map( (e) => {
+            console.log(e);
             config[e.name] = e.value;
         });
     });
@@ -52,6 +53,7 @@ function loadConfig() {
 }
 
 function fromDatastore (obj) {
+  console.log(obj);
   obj.name = obj[Datastore.KEY].name;
   return obj;
 }
