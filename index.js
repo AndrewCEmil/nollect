@@ -47,3 +47,8 @@ exports.loadConfig = () => {
         });
     });
 }
+
+function fromDatastore (obj) {
+  obj.id = obj[Datastore.KEY].id;
+  return obj;
+}
