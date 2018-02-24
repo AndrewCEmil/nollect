@@ -16,3 +16,17 @@ exports.helloWorld = (req, res) => {
   }
 };
 
+exports.makeCall = (req, res) => {
+    const config = require('./config')
+    const conf = config.getConfig();
+    const Twilio = require('twilio');
+    const client = new Twilio(conf.account_sid, conf.auth_token);
+
+    client.api.calls
+      .create({
+        url: 'http://demo.twilio.com/docs/voice.xml',
+        to: conf.my_phone,
+        from: conf.twilio_phone
+      })
+      .then(call => console.log(call.sid));
+}
