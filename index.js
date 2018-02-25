@@ -20,25 +20,25 @@ exports.helloWorld = (req, res) => {
 };
 
 exports.makeCall = (req, res) => {
-    conf = loadConfig();
-    console.log(conf);
-    const Twilio = require('twilio');
-    const client = new Twilio(conf.account_sid, conf.auth_token);
+    loadConfig((conf) => {
+        console.log("inside callback");
+        console.log(conf);
+        const Twilio = require('twilio');
+        const client = new Twilio(conf.account_sid, conf.auth_token);
 
-    client.api.calls
-      .create({
-        url: 'http://demo.twilio.com/docs/voice.xml',
-        to: conf.my_phone,
-        from: conf.twilio_phone
-      })
-      .then(call => console.log(call.sid));
+        client.api.calls.create({
+            url: 'http://demo.twilio.com/docs/voice.xml',
+            to: conf.my_phone,
+            from: conf.twilio_phone
+        });
+    });
 }
 
-async function loadConfig() {
+function loadConfig(callback) {
     console.log("top of loadConfig");
     const q = ds.createQuery(["Secret"]);
 
-    var config = await ds.runQuery(q, (err, entities, nextQuery) => {
+    ds.runQuery(q, (err, entities, nextQuery) => {
         console.log("inside query");
         if (err) {
             console.log("error running query");
@@ -52,13 +52,10 @@ async function loadConfig() {
             console.log("added entity to config");
             console.log(cf);
         });
-        console.log("returning cf");
+        console.log("calling back with cf");
         console.log(cf);
-        return cf;
+        callback(cf);
     });
-    console.log("returning config");
-    console.log(config);
-    return config;
 });
 
 function fromDatastore (obj) {
