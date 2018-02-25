@@ -32,7 +32,7 @@ exports.makeCall = (req, res) => {
             from: conf.twilio_phone
         });
     });
-}
+};
 
 function loadConfig(callback) {
     console.log("top of loadConfig");
@@ -56,7 +56,7 @@ function loadConfig(callback) {
         console.log(cf);
         callback(cf);
     });
-});
+}
 
 function fromDatastore (obj) {
   obj.name = obj[Datastore.KEY].name;
