@@ -6,6 +6,8 @@
  */
 const Datastore = require('@google-cloud/datastore');
 const ds = Datastore({projectId: 'nollect-196020'});
+const VoiceResponse = require('twilio').twiml.VoiceResponse;
+
 
 exports.helloWorld = (req, res) => {
   // Example input: {"message": "Hello!"}
@@ -32,6 +34,26 @@ exports.makeCall = (req, res) => {
         res.status(200).send('Success');
     });
 };
+
+exports.collectMenu = (req, res) => {
+    loadConfig((conf) => {
+        const twiml = new VoiceResponse();
+        twiml.say('Enter your target number');
+        twiml.gather({input: 'dtmf', timeout: 60, numDigits: 11});
+        console.log("Response: " + twiml.toString());
+        res.status(200).send(twiml.toString());
+    });
+}
+
+exports.dialOutside = (req, res) => {
+    loadConfig((conf) => {
+        console.log("Got a request to dial outside");
+        console.log(req);
+        console.log(req.body);
+        console.log(req.query);
+        res.status(200).send('Success');
+    });
+}
 
 function loadConfig(callback) {
     const q = ds.createQuery(["Secret"]);
